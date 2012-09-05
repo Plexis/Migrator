@@ -5,7 +5,10 @@ if( php_sapi_name() != "cli" || isset( $_SERVER["REMOTE_ADDR"] ) )
 
 print( "\nCleaning build directory...\n" );
 
-$itr = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( "build" ) );
+if( !@dir( "build" ) )
+	mkdir( "build" );
+else
+	$itr = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( "build" ) );
 
 foreach( $itr as $entry )
 {
