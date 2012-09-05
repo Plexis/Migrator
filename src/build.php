@@ -8,14 +8,16 @@ print( "\nCleaning build directory...\n" );
 if( !@dir( "build" ) )
 	mkdir( "build" );
 else
+{
 	$itr = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( "build" ) );
 
-foreach( $itr as $entry )
-{
-	if( $entry->isDir() )
-		rmdir( $entry->__toString() );
-	else
-		unlink( $entry->__toString() );
+	foreach( $itr as $entry )
+	{
+		if( $entry->isDir() )
+			rmdir( $entry->__toString() );
+		else
+			unlink( $entry->__toString() );
+	}
 }
 
 print( "Building phar...\n" );
@@ -27,7 +29,7 @@ foreach( $itr as $entry )
 {
 	$base = basename( $entry->__toString() );
 
-	if( $base == "build.php" || $base == "migrator.phar.config.ini" || $entry->isDir() )
+	if( $base == "build.php" || $base == "migrator.phar.config.ini" || $base == "migrator.phar.config.php" || $entry->isDir() )
 		continue;
 
 	$file_long  = $entry->__toString();
@@ -45,6 +47,7 @@ foreach( $itr as $entry )
 $phar->setStub( $phar->createDefaultStub( "entry.php" ) );
 
 copy( "src/migrator.phar.config.ini", "build/migrator.phar.config.ini" );
+copy( "src/migrator.phar.config.php", "build/migrator.phar.config.php" );
 
 print( "Done building phar.\n" );
 
