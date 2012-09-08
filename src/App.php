@@ -3,21 +3,20 @@
 if( php_sapi_name() !== "cli" || isset( $_SERVER["REMOTE_ADDR"] ) )
 	die( "Sorry! This script is meant to be run from the command line only." );
 
-define( "WINDOWS", substr( strtoupper( PHP_OS ), 0, 3 ) === "WIN" );
-
-//Define the ROOT const.
-$root = str_ireplace( "phar://", "", __DIR__ );
-$root = str_ireplace( basename( $root ), "", $root );
-$root = rtrim( $root, "/\\" );
-$root = str_replace( ( WINDOWS ) ? "/" : "\\", DIRECTORY_SEPARATOR, $root );
-
-define( "ROOT", $root );
-unset( $root );
-
-require( __DIR__ . "/Includes/functions.php" );
+require( __DIR__ . "/Includes/Constants.php" );
+require( __DIR__ . "/Includes/Functions.php" );
 require( __DIR__ . "/Includes/StringHelper.php" );
 require( __DIR__ . "/Includes/ConsoleColors.php" );
 require( __DIR__ . "/Includes/Console.php" );
+require( __DIR__ . "/Includes/ErrorHandlers.php" );
+
+if( PHP_VERSION_ID < 50300 )
+{
+	Console::SetForegroundColor( ForegroundColors::RED );
+	Console::WriteLine( "PHP 5.3.0 or greater is required to run this script." );
+	Console::ResetColor();
+	exit;
+}
 
 $configPath = path( ROOT, "migrator.phar.config.php" );
 $foundConfig = false;

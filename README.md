@@ -5,7 +5,7 @@ Plexis migrator is a **command-line only** application written purely in PHP des
 There is no, nor will there ever be a web interface for the migrator, everything is done on the command line.
 
 ### Requirements.
-*PHP 5.2.0 or later
+*PHP 5.3.0 or later
 *PHP Phar extension
 *PHP MySQLi extension
 *PHP **must** be able to be run from the command line via the `php` command, doing so on Windows requires that the path to php.exe is stored in the PATH environment variable.
