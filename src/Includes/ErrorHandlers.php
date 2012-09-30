@@ -5,12 +5,16 @@ set_error_handler( "ErrorHandler" );
 
 function ExceptionHandler( $e )
 {
+	global $Lang;
+
 	$exString = "";
 	$HasInnerExceptions = $e->getPrevious() != null;
 	$Primario = true;
+	$First = null;
 
 	while( $e != null )
 	{
+		$First = $e;
 		$type = get_class( $e );
 		$trace = $e->getTrace();
 
@@ -61,22 +65,30 @@ function ExceptionHandler( $e )
 	}
 
 	$FileName = "Exception" . date( "d.m.Y.H.i.s") . ".log";
-	$FullPath = path( ROOT, EXCEPTION_ROOT, $FileName );
-	$Folder   = path( ROOT, EXCEPTION_ROOT );
+	$FullPath = path( ROOT, LOGS_ROOT, $FileName );
+	$Folder   = path( ROOT, LOGS_ROOT );
 
 	if( !is_dir( $Folder ) )
 		mkdir( $Folder );
 
 	file_put_contents( $FullPath, $exString );
+
 	unset( $exString );
-	print( "Caught exception, logged to " . $FullPath );
+
+	Console::SetForegroundColor( ForegroundColors::RED );
+	Console::WriteLine( sprintf( "%s ( %u ): %s", get_class( $First ), $First->getCode(), $First->getMessage() ) );
+	Console::ResetColor();
+	Console::WriteLine( "Logged to " . $FullPath );
 }
 
 function ErrorHandler( $ncode, $message, $file, $line )
 {
+	global $Lang;
+
 	$ErrName;
 	$Severity;
 	$File;
+	$Color;
 	$Output = "";
 
 	//Some of these switches are superfluous, I know. But better safe than sorry.
@@ -86,66 +98,79 @@ function ErrorHandler( $ncode, $message, $file, $line )
 			$ErrName = "E_USER_ERROR";
 			$Severity = "Fatal Error";
 			$File = "Errors.log";
+			$Color = ForegroundColors::RED;
 			break;
 		case E_ERROR:
 			$ErrName = "E_ERROR";
 			$Severity = "Fatal Error";
 			$File = "Errors.log";
+			$Color = ForegroundColors::RED;
 			break;
 		case E_USER_WARNING:
 			$ErrName = "E_USER_WARNING";
 			$Severity = "Warning";
 			$File = "Warnings.log";
+			$Color = ForegroundColors::YELLOW;
 			break;
 		case E_WARNING:
 			$ErrName = "E_WARNING";
 			$Severity = "Warning";
 			$File = "Warnings.log";
+			$Color = ForegroundColors::YELLOW;
 			break;
 		case E_NOTICE:
 			$ErrName = "E_NOTICE";
 			$Severity = "Notice";
 			$File = "Notices.log";
+			$Color = ForegroundColors::CYAN;
 			break;
 		case E_USER_NOTICE:
 			$ErrName = "E_USER_NOTICE";
 			$Severity = "Notice";
 			$File = "Notices.log";
+			$Color = ForegroundColors::CYAN;
 			break;
 		case E_DEPRECATED:
 			$ErrName = "E_DEPRECATED";
 			$Severity = "Deprecation Warning";
-			$File = "Warning.log";
+			$File = "Warnings.log";;
+			$Color = ForegroundColors::YELLOW;
 			break;
 		case E_USER_DEPRECATED:
 			$ErrName = "E_USER_DEPRECATION";
 			$Severity = "Deprecation Warning";
-			$File = "Warning.log";
+			$Color = ForegroundColors::YELLOW;
+			$File = "Warnings.log";;
 			break;
 		case E_PARSE:
 			$ErrName = "E_PARSE";
 			$Severity = "Parse Error";
 			$File = "Errors.log";
+			$Color = ForegroundColors::RED;
 			break;
 		case E_CORE_ERROR:
 			$ErrName = "E_CORE_ERROR";
 			$Severity = "Core Error";
 			$File = "Errors.log";
+			$Color = ForegroundColors::RED;
 			break;
 		case E_COMPILE_ERROR:
 			$ErrName = "E_COMPILE_ERROR";
 			$Severity = "Compile Error";
 			$File = "Errors.log";
+			$Color = ForegroundColors::RED;
 			break;
 		case E_CORE_WARNING:
 			$ErrName = "E_CORE_WARNING";
 			$Severity = "Core Warning";
 			$File = "Warnings.log";
+			$Color = ForegroundColors::YELLOW;
 			break;
 		case E_COMPILE_WARNING:
 			$ErrName = "E_COMPILE_WARNING";
 			$Severity = "Compile Warning";
 			$File = "Warnings.log";
+			$Color = ForegroundColors::YELLOW;
 			break;
 		default: //We should never end up here. If we do this function isn't being called courtesy of set_error_handler()
 			return;
@@ -193,8 +218,17 @@ function ErrorHandler( $ncode, $message, $file, $line )
 	if( !is_dir( $Folder ) )
 		mkdir( $Folder );
 
-	file_put_contents( $FullPath, $Output );
+	if( file_exists( $FullPath ) )
+		file_put_contents( $FullPath, $Output, FILE_APPEND );
+	else
+		file_put_contents( $FullPath, $Output );
+
 	unset( $Output );
+
+	Console::SetForegroundColor( $Color );
+	Console::WriteLine( "PHP triggered {$ErrName}" . PHP_EOL . "Message: {$message}" );
+	Console::ResetColor();
+	Console::WriteLine( "Logged to " . $FullPath );
 }
 
 ?>

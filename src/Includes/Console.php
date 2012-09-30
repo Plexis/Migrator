@@ -10,7 +10,7 @@ class Console
 
 	public static function Write( $message )
 	{
-		if( self::$ColorFormat != null && !WINDOWS )
+		if( self::$ColorFormat != null && !WINDOWS && $config["App"]["ConsoleColors"] )
 			$message = sprintf( self::$ColorFormat, $message );
 
 		fwrite( STDOUT, $message );
@@ -28,12 +28,13 @@ class Console
 
 	public static function SetForegroundColor( $color )
 	{
-		if( $color == null )
+		if( !ForegroundColors::IsValid( $color ) )
+			return;
+		elseif( $color == null )
+		{
 			self::$ForegroundColor = null;
-		elseif( !is_string( $color ) )
 			return;
-		elseif( strpos( $color, ";" ) === false )
-			return;
+		}
 
 		self::$ForegroundColor = $color;
 		self::BuildColorFormatString();
@@ -46,12 +47,13 @@ class Console
 
 	public static function SetBackgroundColor( $color )
 	{
-		if( $color == null )
+		if( !BackgroundColors::IsValid( $color ) )
+			return;
+		elseif( $color == null )
+		{
 			self::$BackgroundColor = null;
-		elseif( !is_string( $color ) )
 			return;
-		elseif( strpos( $color, ";" ) !== false )
-			return;
+		}
 
 		self::$BackgroundColor = $color;
 		self::BuildColorFormatString();

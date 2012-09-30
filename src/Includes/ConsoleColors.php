@@ -18,6 +18,30 @@ class ForegroundColors
 	const YELLOW       = "1;33";
 	const LIGHT_GRAY   = "0;37";
 	const WHITE        = "1;37";
+
+	private static $Colors = array(
+		self::BLACK,
+		self::BLUE,
+		self::BROWN,
+		self::CYAN,
+		self::DARK_GRAY,
+		self::GREEN,
+		self::LIGHT_BLUE,
+		self::LIGHT_CYAN,
+		self::LIGHT_GRAY,
+		self::LIGHT_GREEN,
+		self::LIGHT_PURPLE,
+		self::LIGHT_RED,
+		self::PURPLE,
+		self::RED,
+		self::WHITE,
+		self::YELLOW
+	);
+
+	public static function IsValid( $ColorString )
+	{
+		return in_array( $ColorString, self::$Colors );
+	}
 }
 
 class BackgroundColors
@@ -30,6 +54,22 @@ class BackgroundColors
 	const MAGENTA    = "45";
 	const CYAN       = "46";
 	const LIGHT_GRAY = "47";
+
+	private static $Colors = array(
+		self::BLACK,
+		self::BLUE,
+		self::CYAN,
+		self::GREEN,
+		self::LIGHT_GRAY,
+		self::MAGENTA,
+		self::RED,
+		self::YELLOW
+	);
+
+	public static function IsValid( $ColorString )
+	{
+		return in_array( $ColorString, self::$Colors );
+	}
 }
 
 ?>
